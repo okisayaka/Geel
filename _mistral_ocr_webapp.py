@@ -29,6 +29,7 @@ from typing import Optional, Tuple
 from io import BytesIO
 import random
 from PIL import Image, ImageFilter, ImageOps
+import qrcode
 
 # ページ設定
 st.set_page_config(
@@ -305,6 +306,39 @@ def main():
     # ヘッダー
     st.title("📚 百科全書・啓蒙研究会用 Mistral OCR")
     st.markdown("*18世紀フランス文献のデジタル化支援ツール*")
+    
+    # クイックスタートとQRコード
+    with st.container():
+        col_qs, col_qr = st.columns([2, 1])
+        with col_qs:
+            st.info(
+                """
+                使い方（概要）
+                1) 左のサイドバーに自分の Mistral APIキーを入力
+                2) 右の「ファイルアップロード」に PDF/PNG/JPEG を追加
+                3) 必要なら「画像前処理」「ページ区切り」をON
+                4) 「OCR処理を開始」をクリック → プレビュー → ダウンロード
+                """
+            )
+            sample_link = os.environ.get("SAMPLE_FILES_URL") or st.secrets.get("SAMPLE_FILES_URL", None)
+            if sample_link:
+                st.markdown(f"📎 サンプルファイル: [{sample_link}]({sample_link})")
+            else:
+                st.caption("サンプルファイルは配布資料のリンクからダウンロードしてください。")
+        with col_qr:
+            default_app_url = os.environ.get("APP_URL") or st.secrets.get("APP_URL", "https://tatsuohemmi-geel--mistral-ocr-webapp-kxxcwt.streamlit.app/")
+            with st.expander("QRコード（アクセス用）", expanded=True):
+                app_url = st.text_input("配布用URL", value=default_app_url, help="参加者に配布するURL。変更するとQRも更新されます。")
+                try:
+                    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=4, border=2)
+                    qr.add_data(app_url)
+                    qr.make(fit=True)
+                    qr_img = qr.make_image(fill_color="black", back_color="white")
+                    buf = BytesIO()
+                    qr_img.save(buf, format="PNG")
+                    st.image(buf.getvalue(), caption="このQRからアクセスできます")
+                except Exception as _:
+                    st.warning("QRコードの生成に失敗しました。URLをそのまま配布してください。")
     
     # サイドバー：設定
     with st.sidebar:
