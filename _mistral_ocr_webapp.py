@@ -320,12 +320,14 @@ def main():
                 4) 「OCR処理を開始」をクリック → プレビュー → ダウンロード
                 """
             )
+            # サンプルファイルへの案内（任意リンク）
             sample_link = os.environ.get("SAMPLE_FILES_URL") or st.secrets.get("SAMPLE_FILES_URL", None)
             if sample_link:
                 st.markdown(f"📎 サンプルファイル: [{sample_link}]({sample_link})")
             else:
                 st.caption("サンプルファイルは配布資料のリンクからダウンロードしてください。")
         with col_qr:
+            # アプリURLのQRコード（Secrets/環境変数または編集可能な既定値）
             default_app_url = os.environ.get("APP_URL") or st.secrets.get("APP_URL", "https://tatsuohemmi-geel--mistral-ocr-webapp-kxxcwt.streamlit.app/")
             with st.expander("QRコード（アクセス用）", expanded=True):
                 app_url = st.text_input("配布用URL", value=default_app_url, help="参加者に配布するURL。変更するとQRも更新されます。")
@@ -384,17 +386,17 @@ def main():
         st.subheader("📋 使用方法")
         st.markdown("""
         **対応フォーマット：**
-        - PDF（百科全書原本等）
-        - PNG, JPEG（手稿画像等）
+        - PDF（18世紀稀覯書原本等）
+        - PNG, JPEG（刊本画像等）
         
         **ファイルサイズ：**
         - 5MB以下：高速処理
         - 5MB以上：自動分割処理
         
         **用途例：**
-        - Gallicaからの百科全書原本
-        - 18世紀手稿のデジタル化
-        - 古典籍のテキスト化
+        - Gallicaからの稀覯書PDF原本
+        - 18世紀 Google Books 本などのデジタル化
+        - 古典籍画像のテキスト化
         """)
     
     # メインエリア
